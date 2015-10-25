@@ -158,7 +158,7 @@ public final class Shortstop {
     
     // Print the header
 //    System.out.println("Completed reading the header");
-//    for (Entry<String, String> entry : header.entrySet()) {
+//    for (java.util.Map.Entry<String, String> entry : header.entrySet()) {
 //      System.out.println("Key: " + entry.getKey() + " / Value: " + entry.getValue());
 //    }
     
