@@ -80,22 +80,26 @@ public final class Shortstop {
         // Read the header
         final Map<String, String> header = readHeader(is);
         
+        // Populate the query string parameters based on the URL
+        msg.parseURLandParameters();
+        
         // Check if there is any content (message body) using the Content-Length
         // field; if it's not in the header, assume there is no body
-        char[] buffer = null;
         if (header.containsKey("Content-Length")) {
           final int conLen = Integer.parseInt(header.get("Content-Length"));
           if (conLen > 0) {
             // Allocate our buffer and read the message body
-            buffer = new char[conLen];
+            char[] buffer = new char[conLen];
             is.read(buffer, 0, conLen);
-            // String body = new String(buffer);
-            // System.out.println("Buffer-->" + body + "<--");
+            msg.setMessageBody(buffer);
           }
         }
         
         // Handle the request here
       }
+      
+      // Clear out the request
+      msg.cleanup();
       
       // Write a response
       os = new PrintWriter(socket.getOutputStream(), true);
