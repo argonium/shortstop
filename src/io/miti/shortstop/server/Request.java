@@ -91,7 +91,19 @@ public final class Request
     } else {
       url = endpoint.substring(0, questionMark);
       
-      // TODO Set any query string parameters
+      // Set any query string parameters
+      final String params = endpoint.substring(questionMark + 1);
+      String[] fields = params.split("&");
+      final int len = fields.length;
+      for (int i = 0; i < len; ++i) {
+        final String field = fields[i];
+        final int equalsIndex = field.indexOf('=');
+        if (equalsIndex > 0)  {
+          final String key = field.substring(0, equalsIndex);
+          final String value = (equalsIndex < (field.length() - 1)) ? field.substring(equalsIndex + 1) : "";
+          addParameter(key, value);
+        }
+      }
     }
   }
   
