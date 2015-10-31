@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public final class Shortstop {
   
@@ -87,7 +89,6 @@ public final class Shortstop {
           // response = handleRequest(msg);
           if (response == null) {
             response = new Response();
-            response.setDefaults();
           }
         }
         
@@ -95,7 +96,6 @@ public final class Shortstop {
         msg.cleanup();
       } else {
         response = new Response();
-        response.setDefaults();
       }
       
       // Write the response
@@ -138,14 +138,21 @@ public final class Shortstop {
     
     // Write a response
     StringBuilder sb = new StringBuilder(100);
-    sb.append("HTTP/1.0 ").append(response.getCode()).append(" ").append(response.getMessage()).append(CRLF);
+    sb.append("HTTP/1.1 ").append(response.getCode()).append(" ").append(response.getMessage()).append(CRLF);
     os.print(sb.toString());
     sb.setLength(0);
     
-    // TODO Update this
-    os.print("Content-type: text/html" + CRLF);
-    os.print("Server-name: Shortstop Web Server" + CRLF);
-    os.print("Content-length: 0" + CRLF);
+    // Write the header
+    Set<Entry<String, String>> entries = response.getHeaderIterator();
+    if (entries != null) {
+      for (Entry<String, String> entry : entries) {
+        final String key = entry.getKey();
+        final String value = entry.getValue();
+        os.print(key + ": " + value + CRLF);
+      }
+    }
+    
+    // Add an extra linefeed (to mark the end of the header)
     os.print(CRLF);
     
     // Print any response here, plus CRLF

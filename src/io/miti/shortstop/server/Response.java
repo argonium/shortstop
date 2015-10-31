@@ -1,7 +1,12 @@
 package io.miti.shortstop.server;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TimeZone;
 
 public final class Response
 {
@@ -17,11 +22,19 @@ public final class Response
   /** The response body. */
   private String body = null;
   
+  /** The date formatter. */
+  private static final SimpleDateFormat sdf;
+  
+  static {
+    sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
+    sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+  }
+
   /**
    * Default constructor.
    */
   public Response() {
-    super();
+    setDefaults();
   }
   
   /**
@@ -43,7 +56,7 @@ public final class Response
   }
   
   /**
-   * Get the message text.
+   * Get the status message text.
    * 
    * @return the message text
    */
@@ -52,12 +65,16 @@ public final class Response
   }
   
   /**
-   * Set the message text.
+   * Set the status message text.
    * 
    * @param sMsg the message text
    */
   public void setMessage(final String sMsg) {
-    msg = sMsg;
+    if ((sMsg == null) || sMsg.trim().isEmpty()) {
+      return;
+    }
+    
+    msg = sMsg.trim();
   }
   
   /**
@@ -66,7 +83,13 @@ public final class Response
    * @param sBody the new body
    */
   public void setBody(final String sBody) {
-    body = sBody;
+    
+    // Save the new body
+    body = (sBody == null) ? null : sBody.trim();
+    
+    // Update the content length
+    final int size = (body == null) ? 0 : body.length();
+    addToHeader("Content-length", size);
   }
   
   /**
@@ -87,7 +110,7 @@ public final class Response
   public void addToHeader(final String key, final String value) {
     
     // Skip null/empty keys
-    if ((key == null) || key.isEmpty()) {
+    if ((key == null) || key.isEmpty() || (value == null) || value.isEmpty()) {
       return;
     }
     
@@ -101,10 +124,55 @@ public final class Response
   }
   
   /**
+   * Helper method for adding a key/value pair for an int value.
+   * 
+   * @param key the key
+   * @param value the value as an integer
+   */
+  public void addToHeader(final String key, final int value) {
+    addToHeader(key, Integer.toString(value));
+  }
+  
+  /**
+   * Helper method for adding a key/value pair for a date value.
+   * 
+   * @param key the key
+   * @param date the value as a date
+   */
+  public void addToHeader(final String key, final Date date) {
+    if (date == null) {
+      return;
+    }
+    
+    addToHeader(key, sdf.format(date));
+  }
+  
+  /**
+   * Get the keyset of header pairs.
+   * 
+   * @return the header entries
+   */
+  public Set<Entry<String, String>> getHeaderIterator() {
+    if (header == null) {
+      return null;
+    }
+    
+    return header.entrySet();
+  }
+  
+  /**
    * Set the default values.
    */
   public void setDefaults() {
-    // TODO Auto-generated method stub
+    // TODO Fill this in some more, and use enums for key names
+    addToHeader("Content-type", "text/html");
+    addToHeader("Server-name", "Shortstop Web Server 0.1");
+    addToHeader("Content-length", "0");
+    
+    // Sample: Tue, 15 Oct 2015 08:12:31 GMT
+    final String dateStr = sdf.format(new Date());
+    addToHeader("Date", dateStr);
+    addToHeader("Last-Modified", dateStr);
   }
   
   /**
