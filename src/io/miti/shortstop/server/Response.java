@@ -26,6 +26,7 @@ public final class Response
   private static final SimpleDateFormat sdf;
   
   static {
+    // Sample: Tue, 15 Oct 2015 08:12:31 GMT
     sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
     sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
   }
@@ -167,12 +168,15 @@ public final class Response
     // TODO Fill this in some more, and use enums for key names
     addToHeader("Content-type", "text/html");
     addToHeader("Server-name", "Shortstop Web Server 0.1");
-    addToHeader("Content-length", "0");
+    addToHeader("Content-length", 0);
+    addToHeader("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
+    addToHeader("Pragma", "no-cache");
+    addToHeader("Expires", 0);
     
-    // Sample: Tue, 15 Oct 2015 08:12:31 GMT
-    final String dateStr = sdf.format(new Date());
-    addToHeader("Date", dateStr);
-    addToHeader("Last-Modified", dateStr);
+    // Set date fields
+    final Date date = new Date();
+    addToHeader("Date", date);
+    addToHeader("Last-Modified", date);
   }
   
   /**
