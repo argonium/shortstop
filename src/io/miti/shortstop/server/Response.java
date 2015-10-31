@@ -90,7 +90,7 @@ public final class Response
     
     // Update the content length
     final int size = (body == null) ? 0 : body.length();
-    addToHeader("Content-length", size);
+    addToHeader("Content-Length", size);
   }
   
   /**
@@ -165,13 +165,15 @@ public final class Response
    * Set the default values.
    */
   public void setDefaults() {
-    // TODO Fill this in some more, and use enums for key names
-    addToHeader("Content-type", "text/html");
-    addToHeader("Server-name", "Shortstop Web Server 0.1");
-    addToHeader("Content-length", 0);
+    // TODO Use enums for key names and some values (JSON)
+    addToHeader("Content-Type", "text/html");
+    addToHeader("Server", "Shortstop Web Server 0.1");
+    addToHeader("Content-Length", 0);
     addToHeader("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
     addToHeader("Pragma", "no-cache");
     addToHeader("Expires", 0);
+    addToHeader("X-Content-Type-Options", "nosniff");
+    addToHeader("X-XSS-Protection", "1; mode=block");
     
     // Set date fields
     final Date date = new Date();
