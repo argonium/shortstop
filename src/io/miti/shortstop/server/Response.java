@@ -106,4 +106,13 @@ public final class Response
   public void setDefaults() {
     // TODO Auto-generated method stub
   }
+  
+  /**
+   * Return if there is a body.
+   * 
+   * @return if the response has a body
+   */
+  public boolean hasBody() {
+    return ((body != null) && !body.isEmpty());
+  }
 }

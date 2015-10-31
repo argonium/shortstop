@@ -73,7 +73,7 @@ public final class Shortstop {
       // System.out.println("Request: " + request);
       
       // If there is input in the buffer, read and process it now
-      Object response = null;
+      Response response = null;
       if (request != null) {
         // Create our Request object
         final Request msg = new Request(request);
@@ -85,10 +85,17 @@ public final class Shortstop {
           
           // TODO Handle the request here
           // response = handleRequest(msg);
+          if (response == null) {
+            response = new Response();
+            response.setDefaults();
+          }
         }
         
         // Clear out the request
         msg.cleanup();
+      } else {
+        response = new Response();
+        response.setDefaults();
       }
       
       // Write the response
@@ -126,18 +133,27 @@ public final class Shortstop {
    * @param os the output writer
    * @throws IOException thrown when writing
    */
-  private void writeResponse(final Object response, final PrintWriter os)
+  private void writeResponse(final Response response, final PrintWriter os)
       throws IOException {
     
-    // TODO Update this
-    
     // Write a response
-    os.print("HTTP/1.0 200 OK" + CRLF);
+    StringBuilder sb = new StringBuilder(100);
+    sb.append("HTTP/1.0 ").append(response.getCode()).append(" ").append(response.getMessage()).append(CRLF);
+    os.print(sb.toString());
+    sb.setLength(0);
+    
+    // TODO Update this
     os.print("Content-type: text/html" + CRLF);
     os.print("Server-name: Shortstop Web Server" + CRLF);
     os.print("Content-length: 0" + CRLF);
     os.print(CRLF);
+    
     // Print any response here, plus CRLF
+    if (response.hasBody()) {
+      os.print(response.getBody());
+      os.print(CRLF);
+    }
+    
     os.flush();
   }
   
