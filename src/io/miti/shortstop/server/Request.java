@@ -5,12 +5,14 @@ import java.util.Map;
 
 public final class Request
 {
-  public HttpOperation operation = null;
-  public String endpoint = null;
-  public String protocol = null;
+  private HttpOperation operation = null;
+  private String endpoint = null;
+  private String protocol = null;
   private Map<String, String> parameters = null;
   private char[] buffer = null;
   private String url = null;
+  private String fragment = null;
+  private Map<String, String> header = null; 
   
   /**
    * Default constructor.
@@ -37,8 +39,41 @@ public final class Request
     
     final String verb = line.substring(0, index0).trim();
     operation = getOperation(verb);
-    endpoint = line.substring(index0 + 1, index1).trim();
+    endpoint = decode(line.substring(index0 + 1, index1).trim());
     protocol = line.substring(index1 + 1).trim();
+  }
+  
+  /**
+   * Decode hex strings in the input.
+   * 
+   * @param input the input (endpoint)
+   * @return the input with hex encodings converted
+   */
+  private static String decode(final String input) {
+    
+    // Check the input
+    if ((input == null) || input.isEmpty() || (input.indexOf('%') < 0)) {
+      return input;
+    }
+    
+    // Check for hex-encoded strings
+    final int len = input.length();
+    StringBuilder sb = new StringBuilder(len);
+    for (int i = 0; i < len; ++i) {
+      final char ch = input.charAt(i);
+      if (ch == '%') {
+        if (i < (len - 2)) {
+          final String hexVal = input.substring(i + 1, i + 3);
+          final char hexNum = (char) Integer.parseInt(hexVal, 16);
+          sb.append(Character.valueOf(hexNum));
+          i += 2;
+        }
+      } else {
+        sb.append(ch);
+      }
+    }
+    
+    return sb.toString();
   }
   
   /**
@@ -82,17 +117,26 @@ public final class Request
       return;
     }
     
+    // Parse any fragment
+    final int fragmentIndex = endpoint.indexOf('#');
+    if (fragmentIndex > 0) {
+      fragment = endpoint.substring(fragmentIndex + 1);
+    }
+    
+    // Get the endpoint minus any fragment
+    final String tempEnd = ((fragmentIndex < 0) ? endpoint : endpoint.substring(0, fragmentIndex));
+    
     // Populate the url and parameters fields based on the endpoint value
-    final int questionMark = endpoint.indexOf('?');
+    final int questionMark = tempEnd.indexOf('?');
     if (questionMark < 0) {
-      url = endpoint;
-    } else if (questionMark == (endpoint.length() - 1)) {
-      url = endpoint.substring(0, questionMark);
+      url = tempEnd;
+    } else if (questionMark == (tempEnd.length() - 1)) {
+      url = tempEnd.substring(0, questionMark);
     } else {
-      url = endpoint.substring(0, questionMark);
+      url = tempEnd.substring(0, questionMark);
       
       // Set any query string parameters
-      final String params = endpoint.substring(questionMark + 1);
+      final String params = tempEnd.substring(questionMark + 1);
       String[] fields = params.split("&");
       final int len = fields.length;
       for (int i = 0; i < len; ++i) {
@@ -158,12 +202,48 @@ public final class Request
   }
   
   /**
+   * Return any fragment from the endpoint, or null if none found.
+   * 
+   * @return fragment from the endpoint
+   */
+  public String getFragment() {
+    return fragment;
+  }
+  
+  /**
    * Get the base URL.
    * 
    * @return the base URL
    */
   public String getURL() {
     return url;
+  }
+  
+  /**
+   * Return the endpoint.
+   * 
+   * @return the endpoint
+   */
+  public String getEndpoint() {
+    return endpoint;
+  }
+  
+  /**
+   * Return the protocol string.
+   * 
+   * @return the protocol
+   */
+  public String getProtocol() {
+    return protocol;
+  }
+  
+  /**
+   * Return the operation (verb).
+   * 
+   * @return the operation (verb)
+   */
+  public HttpOperation getOperation() {
+    return operation;
   }
   
   /**
@@ -180,6 +260,29 @@ public final class Request
     buffer = null;
   }
   
+  
+  /**
+   * Add a key/value pair to the header.
+   * 
+   * @param key the key
+   * @param value the value
+   */
+  public void addHeaderRow(final String key, final String value) {
+    
+    // Skip null/empty keys
+    if ((key == null) || key.isEmpty()) {
+      return;
+    }
+    
+    // If the header hasn't been allocated yet, do so now
+    if (header == null) {
+      header = new HashMap<String, String>(5);
+    }
+    
+    // Store the key/value pair
+    header.put(key, value);
+  }
+  
   /**
    * Generate a string representation of this object.
    */
@@ -187,5 +290,29 @@ public final class Request
   public String toString() {
     return "Request [operation=" + operation + ", endpoint=" + endpoint
         + ", protocol=" + protocol + "]";
+  }
+  
+  /**
+   * Returns the value matching the key from the header.
+   * 
+   * @param key the key
+   * @return the value for the key in the header
+   */
+  public String headerGetKey(final String key) {
+    if ((header == null) || (key == null)) {
+      return null;
+    }
+    
+    return header.get(key);
+  }
+  
+  /**
+   * Return whether the header contains the key.
+   * 
+   * @param key the key (must not be null)
+   * @return if header contains the key
+   */
+  public boolean headerContainsKey(final String key) {
+    return ((header != null) && (key != null) && (header.containsKey(key)));
   }
 }

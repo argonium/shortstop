@@ -6,8 +6,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 
 public final class Shortstop {
   
@@ -64,8 +62,8 @@ public final class Shortstop {
     BufferedReader is = null;
     PrintWriter os = null;
     try {
-//      String host = socket.getInetAddress().toString();
-//      System.out.println("Accepted connection from " + host);
+      // String host = socket.getInetAddress().toString();
+      // System.out.println("Accepted connection from " + host);
       
       // Read from the socket
       is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -73,42 +71,29 @@ public final class Shortstop {
       // Get the HTTP request
       final String request = is.readLine();
       // System.out.println("Request: " + request);
-      final Request msg = new Request(request);
-      System.out.println(msg.toString());
-      if (msg.isValidProtocol()) {
       
-        // Read the header
-        final Map<String, String> header = readHeader(is);
-        
-        // Populate the query string parameters based on the URL
-        msg.parseURLandParameters();
-        
-        // Check if there is any content (message body) using the Content-Length
-        // field; if it's not in the header, assume there is no body
-        if (header.containsKey("Content-Length")) {
-          final int conLen = Integer.parseInt(header.get("Content-Length"));
-          if (conLen > 0) {
-            // Allocate our buffer and read the message body
-            char[] buffer = new char[conLen];
-            is.read(buffer, 0, conLen);
-            msg.setMessageBody(buffer);
-          }
+      // If there is input in the buffer, read and process it now
+      Object response = null;
+      if (request != null) {
+        // Create our Request object
+        final Request msg = new Request(request);
+        System.out.println(msg.toString());
+        if (msg.isValidProtocol()) {
+          
+          // Read the remainder of the request (header and any message body)
+          readRemainderOfRequest(is, msg);
+          
+          // TODO Handle the request here
+          // response = handleRequest(msg);
         }
         
-        // Handle the request here
+        // Clear out the request
+        msg.cleanup();
       }
       
-      // Clear out the request
-      msg.cleanup();
-      
-      // Write a response
+      // Write the response
       os = new PrintWriter(socket.getOutputStream(), true);
-      os.print("HTTP/1.0 200 OK" + CRLF);
-      os.print("Content-type: text/html" + CRLF);
-      os.print("Server-name: Shortstop Web Server" + CRLF);
-      os.print("Content-length: 0" + CRLF);
-      os.print(CRLF);
-      os.flush();
+      writeResponse(response, os);
       
       // Close the socket
       socket.close();
@@ -135,16 +120,67 @@ public final class Shortstop {
   
   
   /**
+   * Write the response to the client.
+   * 
+   * @param response the response
+   * @param os the output writer
+   * @throws IOException thrown when writing
+   */
+  private void writeResponse(final Object response, final PrintWriter os)
+      throws IOException {
+    
+    // TODO Update this
+    
+    // Write a response
+    os.print("HTTP/1.0 200 OK" + CRLF);
+    os.print("Content-type: text/html" + CRLF);
+    os.print("Server-name: Shortstop Web Server" + CRLF);
+    os.print("Content-length: 0" + CRLF);
+    os.print(CRLF);
+    // Print any response here, plus CRLF
+    os.flush();
+  }
+  
+  
+  /**
+   * Read the remainder of the request.
+   * 
+   * @param is the input stream
+   * @param msg the request object
+   * @throws IOException thrown exception from reading the input stream
+   */
+  private void readRemainderOfRequest(final BufferedReader is, final Request msg)
+    throws IOException {
+    
+    // Read the header and store in the Request object
+    readHeader(is, msg);
+    
+    // Populate the query string parameters based on the URL
+    msg.parseURLandParameters();
+    
+    // Check if there is any content (message body) using the Content-Length
+    // field; if it's not in the header, assume there is no body
+    if (msg.headerContainsKey("Content-Length")) {
+      final int conLen = Integer.parseInt(msg.headerGetKey("Content-Length"));
+      if (conLen > 0) {
+        // Allocate our buffer and read the message body
+        char[] buffer = new char[conLen];
+        is.read(buffer, 0, conLen);
+        msg.setMessageBody(buffer);
+      }
+    }
+  }
+  
+  
+  /**
    * Read the HTTP header into a map.
    * 
    * @param is the input stream reader
+   * @param msg the request object
    * @return a map of key/value pairs
    * @throws IOException thrown when reading from the input stream
    */
-  private Map<String, String> readHeader(final BufferedReader is) throws IOException {
-    
-    // Build the header map
-    final Map<String, String> header = new HashMap<String, String>(20);
+  private void readHeader(final BufferedReader is, final Request msg) throws IOException {
     
     // Read the header until we hit null or an empty line
     String line = is.readLine();
@@ -153,21 +189,12 @@ public final class Shortstop {
       // Parse the key and value pair
       final int index = line.indexOf(':');
       if (index > 0) {
-        header.put(line.substring(0, index), line.substring(index + 1).trim());
+        msg.addHeaderRow(line.substring(0, index), line.substring(index + 1).trim());
       }
       
       // Read the next line
       line = is.readLine();
     }
-    
-    // Print the header
-//    System.out.println("Completed reading the header");
-//    for (java.util.Map.Entry<String, String> entry : header.entrySet()) {
-//      System.out.println("Key: " + entry.getKey() + " / Value: " + entry.getValue());
-//    }
-    
-    // Return the key/value pairs map
-    return header;
   }
   
   
