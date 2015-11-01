@@ -22,15 +22,6 @@ public final class Response
   /** The response body. */
   private String body = null;
   
-  /** The date formatter. */
-  private static final SimpleDateFormat sdf;
-  
-  static {
-    // Sample: Tue, 15 Oct 2015 08:12:31 GMT
-    sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
-    sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-  }
-
   /**
    * Default constructor.
    */
@@ -135,20 +126,6 @@ public final class Response
   }
   
   /**
-   * Helper method for adding a key/value pair for a date value.
-   * 
-   * @param key the key
-   * @param date the value as a date
-   */
-  public void addToHeader(final String key, final Date date) {
-    if (date == null) {
-      return;
-    }
-    
-    addToHeader(key, sdf.format(date));
-  }
-  
-  /**
    * Get the keyset of header pairs.
    * 
    * @return the header entries
@@ -174,11 +151,15 @@ public final class Response
     addToHeader("Expires", 0);
     addToHeader("X-Content-Type-Options", "nosniff");
     addToHeader("X-XSS-Protection", "1; mode=block");
+    // addToHeader("Content-MD5", <compute MD5 after content encoding?>);
     
     // Set date fields
+    final SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
+    sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
     final Date date = new Date();
-    addToHeader("Date", date);
-    addToHeader("Last-Modified", date);
+    String dateStr = sdf.format(date);
+    addToHeader("Date", dateStr);
+    addToHeader("Last-Modified", dateStr);
   }
   
   /**

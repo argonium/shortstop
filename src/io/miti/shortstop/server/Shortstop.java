@@ -3,9 +3,11 @@ package io.miti.shortstop.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -68,7 +70,7 @@ public final class Shortstop {
       // System.out.println("Accepted connection from " + host);
       
       // Read from the socket
-      is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+      is = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
       
       // Get the HTTP request
       final String request = is.readLine();
@@ -99,7 +101,8 @@ public final class Shortstop {
       }
       
       // Write the response
-      os = new PrintWriter(socket.getOutputStream(), true);
+      os = new PrintWriter(new OutputStreamWriter(
+          socket.getOutputStream(), StandardCharsets.UTF_8), true);
       writeResponse(response, os);
       
       // Close the socket
@@ -188,7 +191,7 @@ public final class Shortstop {
       if (conLen > 0) {
         // Allocate our buffer and read the message body
         char[] buffer = new char[conLen];
-        is.read(buffer, 0, conLen);
+        final int numRead = is.read(buffer, 0, conLen);
         msg.setMessageBody(buffer);
       }
     }

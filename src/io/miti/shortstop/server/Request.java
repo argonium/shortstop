@@ -179,7 +179,7 @@ public final class Request
    * @return if this is a supported protocol
    */
   public boolean isValidProtocol() {
-    return ((protocol != null) && (protocol.equals("HTTP/1.1") ||
+    return ((protocol != null) && (protocol.equals("HTTP/1.0") ||
              protocol.equals("HTTP/1.1")));
   }
   
