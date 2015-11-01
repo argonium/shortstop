@@ -87,16 +87,16 @@ public final class Shortstop {
           // Read the remainder of the request (header and any message body)
           readRemainderOfRequest(is, msg);
           
-          // TODO Handle the request here
-          // response = handleRequest(msg);
-          if (response == null) {
-            response = new Response();
-          }
+          // Handle the request
+          response = handleRequest(msg);
         }
         
         // Clear out the request
         msg.cleanup();
-      } else {
+      }
+      
+      // If the response object is null, set it now
+      if (response == null) {
         response = new Response();
       }
       
@@ -128,6 +128,16 @@ public final class Shortstop {
     }
   }
   
+  /**
+   * Handle requests.
+   * 
+   * @param msg the request
+   * @return the response
+   */
+  private Response handleRequest(final Request msg) {
+    // TODO Handle requests by looking up handlers for the verb and URL in msg
+    return null;
+  }
   
   /**
    * Write the response to the client.
