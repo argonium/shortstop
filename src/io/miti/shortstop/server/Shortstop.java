@@ -200,8 +200,11 @@ public final class Shortstop {
       final int conLen = Integer.parseInt(msg.headerGetKey("Content-Length"));
       if (conLen > 0) {
         // Allocate our buffer and read the message body
-        char[] buffer = new char[conLen];
+        final char[] buffer = new char[conLen];
         final int numRead = is.read(buffer, 0, conLen);
+        if (numRead != conLen) {
+          System.out.println(String.format("Error: Expected %d bytes but found %d in the body", conLen, numRead));
+        }
         msg.setMessageBody(buffer);
       }
     }
