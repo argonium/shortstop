@@ -145,16 +145,11 @@ public final class Shortstop {
    * @return whether the application is running in a jar (default is true)
    */
   public static boolean isRunningInJar() {
+    // Get a URL to this class so we can check how it's loaded (jar or file)
     final java.net.URL url = Shortstop.class.getResource("Shortstop.class");
-    boolean inJar = true;
-    if (url != null) {
-      final String resource = url.toString();
-      if (resource != null) {
-        // Check the start of the string.  If it's a file, it'll start with "file:".
-        inJar = resource.startsWith("jar:");
-      }
-    }
     
+    // Check the start of the string.  If it's a file, it'll start with "file:".
+    final boolean inJar = ((url == null) ? true : url.toString().startsWith("jar:"));
     return inJar;
   }
   
