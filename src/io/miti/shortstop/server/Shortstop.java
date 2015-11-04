@@ -257,10 +257,10 @@ public final class Shortstop {
    * @param args arguments to the program
    */
   public static void main(final String[] args) {
-    // Define a default port number
-    final int port = 8000;
+    // Get the properties
+    Config cfg = new Config();
     
     // Start the server
-    new Shortstop().startServer(port);
+    new Shortstop().startServer(cfg.getPort());
   }
 }
