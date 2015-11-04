@@ -1,2 +1,16 @@
 # Specify the port for the web server
-http.port=8008
+http.port=8080
+
+# Set whether we allow the client to download files. This
+# is only allowed if "true".  Any other value (or if it's
+# missing) is interpreted as "false".
+file.download.allowed=true
+
+# The file extensions that can be retrieved.  This is either
+# a comma-separated list of extensions, or * (for all types).
+# The default is no file extensions can be downloaded.
+file.extensions.filter=css,html,js,json
+
+# The directory to look in for requested files. The default
+# directory is none.
+file.directory=./files
