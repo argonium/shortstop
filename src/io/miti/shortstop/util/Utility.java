@@ -40,4 +40,20 @@ public final class Utility
     
     return val;
   }
+  
+  /**
+   * Parse a string as a boolean (true or false).
+   * 
+   * @param str the input string
+   * @param defaultValue the default value
+   * @return the str value as a boolean, or defaultValue
+   */
+  public static boolean parseStringAsBoolean(final String str, final boolean defaultValue) {
+    if ((str == null) || (str.trim().isEmpty())) {
+      return defaultValue;
+    }
+    
+    final boolean val = ((str.equals("true")) ? true : defaultValue);
+    return val;
+  }
 }
