@@ -60,6 +60,11 @@ public final class Shortstop {
     }
   }
   
+  /**
+   * We received a request from a client, so handle it now.
+   * 
+   * @param socket the connection socket
+   */
   private void handleConn(final Socket socket) {
     
     // Define the input stream reader and output stream writer
@@ -136,6 +141,11 @@ public final class Shortstop {
    */
   private Response handleRequest(final Request msg) {
     // TODO Handle requests by looking up handlers for the verb and URL in msg
+    
+    // If we support downloading files, get any extension from the request URL.
+    // If the extension is allowed, get the file from the files directory.  If
+    // it exists, return it.  If not, return 404.
+    
     return null;
   }
   
