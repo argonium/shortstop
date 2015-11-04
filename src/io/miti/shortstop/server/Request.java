@@ -1,5 +1,7 @@
 package io.miti.shortstop.server;
 
+import io.miti.shortstop.util.Utility;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,7 +66,7 @@ public final class Request
       if (ch == '%') {
         if (i < (len - 2)) {
           final String hexVal = input.substring(i + 1, i + 3);
-          final char hexNum = (char) Integer.parseInt(hexVal, 16);
+          final char hexNum = (char) Utility.parseStringAsInt(hexVal, ((int) '_'), 16);
           sb.append(Character.valueOf(hexNum));
           i += 2;
         }
