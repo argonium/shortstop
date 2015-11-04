@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Set;
 
 public final class Config
 {
@@ -15,6 +16,10 @@ public final class Config
   private static final String PROPS_FILENAME = "shortstop.props";
   
   private int port = DEFAULT_PORT;
+  private boolean canDownloadFiles = false;
+  private boolean canDownloadAllExtensions = false;
+  private Set<String> allowedExtensions = null;
+  private String fileDirectory = null;
   
   public Config() {
     readProperties();
