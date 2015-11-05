@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 
+import io.miti.shortstop.util.ResponseCodeCache;
+
 public final class Response
 {
   /** The status code. */
@@ -45,6 +47,9 @@ public final class Response
    */
   public void setCode(final int nCode) {
     code = nCode;
+    
+    // Look up the standard description of the code
+    setMessage(ResponseCodeCache.getCache().getResponseMessage(code));
   }
   
   /**
@@ -167,8 +172,7 @@ public final class Response
    * Set the 404 for this response.
    */
   public void setAs404() {
-    code = 404;
-    msg = "File not found";
+    setCode(404);
     setBody(null);
   }
   

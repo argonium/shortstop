@@ -196,7 +196,6 @@ public final class Shortstop {
           final Path path = file.toPath();
           byte[] data = Files.readAllBytes(path);
           response.setCode(200);
-          response.setMessage("OK");
           response.setBody(data);
           response.addToHeader("Content-Type", ContentTypeCache.getCache().getContentTypeMIMEType(ext));
           canContinue = true;
