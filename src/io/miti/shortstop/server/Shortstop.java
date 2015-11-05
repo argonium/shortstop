@@ -2,12 +2,12 @@ package io.miti.shortstop.server;
 
 import io.miti.shortstop.util.ContentTypeCache;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -88,7 +88,7 @@ public final class Shortstop {
     
     // Define the input stream reader and output stream writer
     BufferedReader is = null;
-    PrintWriter os = null;
+    BufferedOutputStream os = null;
     try {
       // String host = socket.getInetAddress().toString();
       // System.out.println("Accepted connection from " + host);
@@ -125,9 +125,11 @@ public final class Shortstop {
       }
       
       // Write the response
-      os = new PrintWriter(new OutputStreamWriter(
-          socket.getOutputStream(), StandardCharsets.UTF_8), true);
+      os = new BufferedOutputStream(socket.getOutputStream());
       writeResponse(response, os);
+//      os = new PrintWriter(new OutputStreamWriter(
+//          socket.getOutputStream(), StandardCharsets.UTF_8), true);
+//      writeResponse(response, os);
       
       // Close the socket
       socket.close();
@@ -146,7 +148,11 @@ public final class Shortstop {
       
       // Close the output stream
       if (os != null) {
-        os.close();
+        try {
+          os.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
         os = null;
       }
     }
@@ -229,14 +235,12 @@ public final class Shortstop {
    * @param os the output writer
    * @throws IOException thrown when writing
    */
-  private void writeResponse(final Response response, final PrintWriter os)
+  private void writeResponse(final Response response, final OutputStream os)
       throws IOException {
     
     // Write a response
     StringBuilder sb = new StringBuilder(100);
     sb.append("HTTP/1.1 ").append(response.getCode()).append(" ").append(response.getMessage()).append(CRLF);
-    os.print(sb.toString());
-    sb.setLength(0);
     
     // Write the header
     Set<Entry<String, String>> entries = response.getHeaderIterator();
@@ -244,17 +248,24 @@ public final class Shortstop {
       for (Entry<String, String> entry : entries) {
         final String key = entry.getKey();
         final String value = entry.getValue();
-        os.print(key + ": " + value + CRLF);
+        sb.append(key).append(": ").append(value).append(CRLF);
       }
     }
     
     // Add an extra linefeed (to mark the end of the header)
-    os.print(CRLF);
+    sb.append(CRLF);
+    
+    // Write the header
+    os.write(sb.toString().getBytes());
+    
+    // Clear the buffer
+    sb.setLength(0);
+    sb = null;
     
     // Print any response here, plus CRLF
     if (response.hasBody()) {
-      os.print(response.getBody());
-      os.print(CRLF);
+      os.write(response.getBody());
+      os.write(CRLF.getBytes());
     }
     
     os.flush();
