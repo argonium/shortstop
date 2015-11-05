@@ -20,7 +20,7 @@ public final class Response
   private Map<String, String> header = null;
   
   /** The response body. */
-  private String body = null;
+  private byte[] body = null;
   
   /**
    * Default constructor.
@@ -74,13 +74,13 @@ public final class Response
    * 
    * @param sBody the new body
    */
-  public void setBody(final String sBody) {
+  public void setBody(final byte[] sBody) {
     
     // Save the new body
     body = (sBody == null) ? null : sBody;
     
     // Update the content length
-    final int size = (body == null) ? 0 : body.length();
+    final int size = (body == null) ? 0 : body.length;
     addToHeader("Content-Length", size);
   }
   
@@ -89,7 +89,7 @@ public final class Response
    * 
    * @return the body
    */
-  public String getBody() {
+  public byte[] getBody() {
     return body;
   }
   
@@ -179,6 +179,6 @@ public final class Response
    * @return if the response has a body
    */
   public boolean hasBody() {
-    return ((body != null) && !body.isEmpty());
+    return ((body != null) && (body.length > 0));
   }
 }

@@ -1,6 +1,7 @@
 package io.miti.shortstop.server;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -8,6 +9,8 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -16,25 +19,39 @@ public final class Shortstop {
   /** Default for line-endings. */
   public static final String CRLF = "\r\n";
   
+  /** The configuration. */
+  private Config cfg = null;
+  
+  
   /**
    * Default constructor.
    */
-  public Shortstop() {
+  @SuppressWarnings("unused")
+  private Shortstop() {
     super();
   }
   
+  
   /**
-   * Start a server on the specified port.
+   * Constructor.
    * 
-   * @param port the port number
+   * @param cfg the configuration
    */
-  private void startServer(final int port) {
+  public Shortstop(final Config cfg) {
+    this.cfg = cfg;
+  }
+  
+  
+  /**
+   * Start a server.
+   */
+  private void startServer() {
     
     // Try to start the server
     ServerSocket s = null;
     try {
-      s = new ServerSocket(port);
-      System.out.println("Started server on port " + port);
+      s = new ServerSocket(cfg.getPort());
+      System.out.println("Started server on port " + cfg.getPort());
     } catch (IOException ioe) {
       System.err.println("Error running server: " + ioe.getMessage());
       s = null;
@@ -139,14 +156,52 @@ public final class Shortstop {
    * @param msg the request
    * @return the response
    */
-  private Response handleRequest(final Request msg) {
-    // TODO Handle requests by looking up handlers for the verb and URL in msg
+  private Response handleRequest(final Request msg) throws IOException {
     
-    // If we support downloading files, get any extension from the request URL.
-    // If the extension is allowed, get the file from the files directory.  If
-    // it exists, return it.  If not, return 404.
+    // Handle requests by looking up handlers for the verb and URL in msg
+    Response response = new Response();
+    if (msg.getURL().equals("/") && msg.getOperation().equals(HttpOperation.GET)) {
+      // TODO Handle the root environment
+    } else if (msg.getURL().equals("/topics") && msg.getOperation().equals(HttpOperation.GET)) {
+      // TODO Handle a specific endpoint
+    } else if (cfg.canDownloadFiles()){
+      
+      // We support downloading files.  Get the extension and check that.
+      final String url = msg.getURL();
+      final int index = url.lastIndexOf('.');
+      boolean canContinue = false;
+      if (index < 0) {
+        canContinue = false;
+      } else {
+        final String ext = url.substring(index + 1).toLowerCase();
+        canContinue = cfg.canDownloadExtension(ext);
+      }
+      
+      // Passed the tests so far
+      if (canContinue) {
+        // Verify the file exists (as a file)
+        final File file = new File(cfg.getFileDirectory(), url);
+        if (!file.exists() || !file.isFile()) {
+          canContinue = false;
+        } else {
+          final Path path = file.toPath();
+          byte[] data = Files.readAllBytes(path);
+          response.setCode(200);
+          response.setMessage("OK");
+          response.setBody(data);
+          canContinue = true;
+        }
+      }
+      
+      // If an error occurred, mark the response as 404
+      if (!canContinue) {
+        response.setAs404();
+      }
+    } else {
+      response.setAs404();
+    }
     
-    return null;
+    return response;
   }
   
   /**
@@ -271,6 +326,6 @@ public final class Shortstop {
     Config cfg = new Config();
     
     // Start the server
-    new Shortstop().startServer(cfg.getPort());
+    new Shortstop(cfg).startServer();
   }
 }
