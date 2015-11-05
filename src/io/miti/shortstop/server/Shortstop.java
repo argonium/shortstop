@@ -1,5 +1,7 @@
 package io.miti.shortstop.server;
 
+import io.miti.shortstop.util.ContentTypeCache;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -170,10 +172,11 @@ public final class Shortstop {
       final String url = msg.getURL();
       final int index = url.lastIndexOf('.');
       boolean canContinue = false;
+      String ext = null;
       if (index < 0) {
         canContinue = false;
       } else {
-        final String ext = url.substring(index + 1).toLowerCase();
+        ext = url.substring(index + 1).toLowerCase();
         canContinue = cfg.canDownloadExtension(ext);
       }
       
@@ -189,6 +192,7 @@ public final class Shortstop {
           response.setCode(200);
           response.setMessage("OK");
           response.setBody(data);
+          response.addToHeader("Content-Type", ContentTypeCache.getCache().getContentTypeMIMEType(ext));
           canContinue = true;
         }
       }
