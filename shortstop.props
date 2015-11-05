@@ -9,7 +9,7 @@ file.download.allowed=true
 # The file extensions that can be retrieved.  This is either
 # a comma-separated list of extensions, or * (for all types).
 # The default is no file extensions can be downloaded.
-file.extensions.filter=css,html,js,json
+file.extensions.filter=css,html,js,json,txt
 
 # The directory to look in for requested files. The default
 # directory is none.
