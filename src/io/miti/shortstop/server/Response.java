@@ -77,7 +77,7 @@ public final class Response
   public void setBody(final String sBody) {
     
     // Save the new body
-    body = (sBody == null) ? null : sBody.trim();
+    body = (sBody == null) ? null : sBody;
     
     // Update the content length
     final int size = (body == null) ? 0 : body.length();
@@ -161,6 +161,17 @@ public final class Response
     addToHeader("Date", dateStr);
     addToHeader("Last-Modified", dateStr);
   }
+  
+  
+  /**
+   * Set the 404 for this response.
+   */
+  public void setAs404() {
+    code = 404;
+    msg = "File not found";
+    setBody(null);
+  }
+  
   
   /**
    * Return if there is a body.
