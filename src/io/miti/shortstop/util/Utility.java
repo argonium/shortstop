@@ -3,8 +3,6 @@ package io.miti.shortstop.util;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-
 public final class Utility
 {
   private Utility() {
@@ -63,18 +61,24 @@ public final class Utility
   }
   
   /**
-   * Compute the MD5 hash for an input string.
+   * Compute the MD5 hash (in base 64) for an input string.
    * 
    * @param str the input string
-   * @return the MD5 value for str
+   * @return the base-64 MD5 value for str
    */
   public static String getMD5(final byte[] str) {
     
     String md5 = null;
     try {
-      MessageDigest md = MessageDigest.getInstance("MD5");
-      byte[] digest = md.digest(str);
-      md5 = (new HexBinaryAdapter()).marshal(digest);
+      // Get the MD5 hash
+      final MessageDigest md = MessageDigest.getInstance("MD5");
+      final byte[] digest = md.digest(str);
+      
+      // Encode the bytes as base-64
+      final byte[] encoded = java.util.Base64.getEncoder().encode(digest);
+      
+      // Convert to a string
+      md5 = new String(encoded);
     } catch (NoSuchAlgorithmException e) {
       System.out.println("Exception computing MD5: " + e.getMessage());
     }
