@@ -22,6 +22,7 @@ public final class Config
   private boolean canDownloadAllExtensions = false;
   private Set<String> allowedExtensions = null;
   private String fileDirectory = null;
+  private boolean computeMD5Response = false;
   
   public Config() {
     readProperties();
@@ -106,6 +107,10 @@ public final class Config
       canDownloadFiles = false;
       fileDirectory = null;
     }
+    
+    // Check if we should compute the MD5 for responses
+    computeMD5Response = Utility.parseStringAsBoolean(
+        props.getProperty("md5.response"), false);
   }
   
   
@@ -146,5 +151,16 @@ public final class Config
    */
   public String getFileDirectory() {
     return fileDirectory;
+  }
+  
+  
+  /**
+   * Whether to compute the MD5 hash for responses and include
+   * it in the response header.
+   * 
+   * @return if we should compute MD5 hash values for response body
+   */
+  public boolean shouldComputeMD5Response() {
+    return computeMD5Response;
   }
 }

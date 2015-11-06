@@ -10,7 +10,13 @@ file.download.allowed=true
 # a comma-separated list of extensions, or * (for all types).
 # The default is no file extensions can be downloaded.
 file.extensions.filter=css,html,js,json,txt
+# Alternative, to support all file types
+# file.extensions.filter=*
 
 # The directory to look in for requested files. The default
 # directory is none.
 file.directory=./files
+
+# If true, compute the MD5 hash for responses and include
+# the value in the header sent to the client
+md5.response=true
