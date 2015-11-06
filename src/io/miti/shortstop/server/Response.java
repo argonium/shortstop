@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 
+import io.miti.shortstop.util.HeaderField;
 import io.miti.shortstop.util.ResponseCodeCache;
 
 public final class Response
@@ -147,24 +148,23 @@ public final class Response
    * Set the default values.
    */
   public void setDefaults() {
-    // TODO Use enums for key names and some values (JSON)
-    addToHeader("Content-Type", "text/html");
-    addToHeader("Server", "Shortstop Web Server 0.1");
-    addToHeader("Content-Length", 0);
-    addToHeader("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
-    addToHeader("Pragma", "no-cache");
-    addToHeader("Expires", 0);
+    addToHeader(HeaderField.RES_CONTENT_TYPE, "text/html");
+    addToHeader(HeaderField.RES_SERVER, "Shortstop Web Server 0.1");
+    addToHeader(HeaderField.RES_CONTENT_LENGTH, 0);
+    addToHeader(HeaderField.RES_CACHE_CONTROL, "no-cache, no-store, max-age=0, must-revalidate");
+    addToHeader(HeaderField.RES_PRAGMA, "no-cache");
+    addToHeader(HeaderField.RES_EXPIRES, 0);
     addToHeader("X-Content-Type-Options", "nosniff");
     addToHeader("X-XSS-Protection", "1; mode=block");
-    // addToHeader("Content-MD5", <compute MD5 after content encoding?>);
+    // addToHeader(HeaderField.RES_CONTENT_MD5, <compute MD5 after content encoding?>);
     
     // Set date fields
     final SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
     sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
     final Date date = new Date();
     String dateStr = sdf.format(date);
-    addToHeader("Date", dateStr);
-    addToHeader("Last-Modified", dateStr);
+    addToHeader(HeaderField.RES_DATE, dateStr);
+    addToHeader(HeaderField.RES_LAST_MODIFIED, dateStr);
   }
   
   

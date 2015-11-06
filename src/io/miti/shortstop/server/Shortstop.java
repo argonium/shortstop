@@ -1,6 +1,7 @@
 package io.miti.shortstop.server;
 
 import io.miti.shortstop.util.ContentTypeCache;
+import io.miti.shortstop.util.HeaderField;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -194,7 +195,8 @@ public final class Shortstop {
           byte[] data = Files.readAllBytes(path);
           response.setCode(200);
           response.setBody(data);
-          response.addToHeader("Content-Type", ContentTypeCache.getCache().getContentTypeMIMEType(ext));
+          response.addToHeader(HeaderField.RES_CONTENT_TYPE,
+              ContentTypeCache.getCache().getContentTypeMIMEType(ext));
           canContinue = true;
         }
       }
@@ -286,8 +288,8 @@ public final class Shortstop {
     
     // Check if there is any content (message body) using the Content-Length
     // field; if it's not in the header, assume there is no body
-    if (msg.headerContainsKey("Content-Length")) {
-      final int conLen = Integer.parseInt(msg.headerGetKey("Content-Length"));
+    if (msg.headerContainsKey(HeaderField.RES_CONTENT_LENGTH)) {
+      final int conLen = Integer.parseInt(msg.headerGetKey(HeaderField.RES_CONTENT_LENGTH));
       if (conLen > 0) {
         // Allocate our buffer and read the message body
         final char[] buffer = new char[conLen];
