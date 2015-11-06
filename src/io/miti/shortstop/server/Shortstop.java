@@ -127,9 +127,6 @@ public final class Shortstop {
       // Write the response
       os = new BufferedOutputStream(socket.getOutputStream());
       writeResponse(response, os);
-//      os = new PrintWriter(new OutputStreamWriter(
-//          socket.getOutputStream(), StandardCharsets.UTF_8), true);
-//      writeResponse(response, os);
       
       // Close the socket
       socket.close();
