@@ -1,6 +1,7 @@
 package io.miti.shortstop.util;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public final class ContentTypeCache {
@@ -83,7 +84,7 @@ public final class ContentTypeCache {
       return false;
     }
     
-    return map.containsKey(key.toLowerCase());
+    return map.containsKey(key.toLowerCase(Locale.US));
   }
   
   /**
@@ -93,7 +94,7 @@ public final class ContentTypeCache {
    * @return the corresponding MIME type, or null if not found
    */
   public String getContentTypeMIMEType(final String key) {
-    final String str = ((key == null) ? null : map.get(key.toLowerCase()));
+    final String str = ((key == null) ? null : map.get(key.toLowerCase(Locale.US)));
     return str;
   }
   
