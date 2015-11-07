@@ -14,6 +14,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -180,7 +181,7 @@ public final class Shortstop {
       if (index < 0) {
         canContinue = false;
       } else {
-        ext = url.substring(index + 1).toLowerCase();
+        ext = url.substring(index + 1).toLowerCase(Locale.US);
         canContinue = cfg.canDownloadExtension(ext);
       }
       
@@ -254,16 +255,15 @@ public final class Shortstop {
     sb.append(CRLF);
     
     // Write the header
-    os.write(sb.toString().getBytes());
+    os.write(sb.toString().getBytes(StandardCharsets.UTF_8));
     
     // Clear the buffer
     sb.setLength(0);
-    sb = null;
     
     // Print any response here, plus CRLF
     if (response.hasBody()) {
       os.write(response.getBody());
-      os.write(CRLF.getBytes());
+      os.write(CRLF.getBytes(StandardCharsets.UTF_8));
     }
     
     os.flush();
