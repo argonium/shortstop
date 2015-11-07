@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -93,7 +94,7 @@ public final class Config
           while (st.hasMoreTokens()) {
             final String str = st.nextToken().trim();
             if (!str.isEmpty()) {
-              allowedExtensions.add(str.toLowerCase());
+              allowedExtensions.add(str.toLowerCase(Locale.US));
             }
           }
         }
@@ -140,7 +141,7 @@ public final class Config
     }
     
     return (canDownloadFiles() && (canDownloadAllExtensions ||
-            ((allowedExtensions != null) && allowedExtensions.contains(ext.toLowerCase()))));
+            ((allowedExtensions != null) && allowedExtensions.contains(ext.toLowerCase(Locale.US)))));
   }
   
   
