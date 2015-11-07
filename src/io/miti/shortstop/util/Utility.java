@@ -1,5 +1,6 @@
 package io.miti.shortstop.util;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -78,7 +79,7 @@ public final class Utility
       final byte[] encoded = java.util.Base64.getEncoder().encode(digest);
       
       // Convert to a string
-      md5 = new String(encoded);
+      md5 = new String(encoded, StandardCharsets.UTF_8);
     } catch (NoSuchAlgorithmException e) {
       System.out.println("Exception computing MD5: " + e.getMessage());
     }
