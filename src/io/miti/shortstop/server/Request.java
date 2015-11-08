@@ -203,6 +203,10 @@ public final class Request
     buffer = caBuffer;
   }
   
+  public boolean hasBody() {
+    return (buffer != null);
+  }
+  
   /**
    * Return any fragment from the endpoint, or null if none found.
    * 

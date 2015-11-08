@@ -11,6 +11,7 @@ import java.util.TimeZone;
 import io.miti.shortstop.util.ContentTypeCache;
 import io.miti.shortstop.util.HeaderField;
 import io.miti.shortstop.util.ResponseCodeCache;
+import io.miti.shortstop.util.Utility;
 
 public final class Response
 {
@@ -31,6 +32,16 @@ public final class Response
    */
   public Response() {
     setDefaults();
+  }
+  
+  /**
+   * Constructor taking the response code.
+   * 
+   * the response code
+   */
+  public Response(final int nCode) {
+    setDefaults();
+    setCode(nCode);
   }
   
   /**
@@ -215,5 +226,15 @@ public final class Response
    */
   public boolean hasBody() {
     return ((body != null) && (body.length > 0));
+  }
+  
+  /**
+   * Add the MD5 hash to the header.
+   */
+  public void addMD5() {
+    if (body != null) {
+      final String md5 = Utility.getMD5(body);
+      header.put(HeaderField.RES_CONTENT_MD5, md5);
+    }
   }
 }
