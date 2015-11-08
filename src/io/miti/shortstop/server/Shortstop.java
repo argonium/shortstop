@@ -2,6 +2,7 @@ package io.miti.shortstop.server;
 
 import io.miti.shortstop.util.ContentTypeCache;
 import io.miti.shortstop.util.HeaderField;
+import io.miti.shortstop.util.Utility;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -165,6 +166,17 @@ public final class Shortstop {
    */
   private Response handleRequest(final Request msg) throws IOException {
     
+    // If the request has an MD5 value for the content, evaluate it now
+    final String reqMD5 = msg.headerGetKey(HeaderField.REQ_CONTENT_MD5);
+    if ((reqMD5 != null) && (msg.hasBody())) {
+      // Compute the MD5 hash for the content and see if they match
+      final String md5 = Utility.getMD5(new String(msg.getMessageBody()).getBytes());
+      if (!md5.equals(reqMD5)) {
+        Response resp = new Response(400);
+        return resp;
+      }
+    }
+    
     // Handle requests by looking up handlers for the verb and URL in msg
     Response response = new Response();
     if (msg.getURL().equals("/") && msg.getOperation().equals(HttpOperation.GET)) {
@@ -236,6 +248,11 @@ public final class Shortstop {
    */
   private void writeResponse(final Response response, final OutputStream os)
       throws IOException {
+    
+    // If we need to include the MD5 value in the response do so now
+    if (cfg.shouldComputeMD5Response()) {
+      response.addMD5();
+    }
     
     // Write a response
     StringBuilder sb = new StringBuilder(100);
