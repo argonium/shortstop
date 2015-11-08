@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 
+import io.miti.shortstop.util.ContentTypeCache;
 import io.miti.shortstop.util.HeaderField;
 import io.miti.shortstop.util.ResponseCodeCache;
 
@@ -87,7 +88,7 @@ public final class Response
     
     // Update the content length
     final int size = (body == null) ? 0 : body.length;
-    addToHeader("Content-Length", size);
+    addToHeader(HeaderField.RES_CONTENT_LENGTH, size);
   }
   
   /**
@@ -145,10 +146,40 @@ public final class Response
   }
   
   /**
+   * Set the content type in the response header to JSON.
+   */
+  public void setJsonContentType() {
+    setContentTypeByFileExt("json");
+  }
+  
+  /**
+   * Set the content type in the response header to plain text.
+   */
+  public void setPlainTextContentType() {
+    setContentTypeByFileExt("txt");
+  }
+  
+  /**
+   * Set the content type in the response header to HTML.
+   */
+  public void setHTMLContentType() {
+    setContentTypeByFileExt("html");
+  }
+  
+  /**
+   * Set the content type based on the file extension (e.g., html, txt, xls).
+   * 
+   * @param ext the file extension
+   */
+  public void setContentTypeByFileExt(final String ext) {
+    addToHeader(HeaderField.RES_CONTENT_TYPE, ContentTypeCache.getCache().getContentTypeMIMEType(ext));
+  }
+  
+  /**
    * Set the default values.
    */
   public void setDefaults() {
-    addToHeader(HeaderField.RES_CONTENT_TYPE, "text/html");
+    setPlainTextContentType();
     addToHeader(HeaderField.RES_SERVER, "Shortstop Web Server 0.1");
     addToHeader(HeaderField.RES_CONTENT_LENGTH, 0);
     addToHeader(HeaderField.RES_CACHE_CONTROL, "no-cache, no-store, max-age=0, must-revalidate");
