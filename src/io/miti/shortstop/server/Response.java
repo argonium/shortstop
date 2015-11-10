@@ -37,7 +37,7 @@ public final class Response
   /**
    * Constructor taking the response code.
    * 
-   * the response code
+   * @param nCode the response code
    */
   public Response(final int nCode) {
     setDefaults();
@@ -57,12 +57,15 @@ public final class Response
    * Set the status code.
    * 
    * @param nCode the status code
+   * @return this
    */
-  public void setCode(final int nCode) {
+  public Response setCode(final int nCode) {
     code = nCode;
     
     // Look up the standard description of the code
     setMessage(ResponseCodeCache.getCache().getResponseMessage(code));
+    
+    return this;
   }
   
   /**
@@ -78,21 +81,25 @@ public final class Response
    * Set the status message text.
    * 
    * @param sMsg the message text
+   * @return this
    */
-  public void setMessage(final String sMsg) {
+  public Response setMessage(final String sMsg) {
     if ((sMsg == null) || sMsg.trim().isEmpty()) {
-      return;
+      return this;
     }
     
     msg = sMsg.trim();
+    
+    return this;
   }
   
   /**
    * Set the response body.
    * 
    * @param sBody the new body
+   * @return this
    */
-  public void setBody(final byte[] sBody) {
+  public Response setBody(final byte[] sBody) {
     
     // Save the new body
     body = (sBody == null) ? null : sBody;
@@ -100,6 +107,8 @@ public final class Response
     // Update the content length
     final int size = (body == null) ? 0 : body.length;
     addToHeader(HeaderField.RES_CONTENT_LENGTH, size);
+    
+    return this;
   }
   
   /**
@@ -116,12 +125,13 @@ public final class Response
    * 
    * @param key the key
    * @param value the value
+   * @return this
    */
-  public void addToHeader(final String key, final String value) {
+  public Response addToHeader(final String key, final String value) {
     
     // Skip null/empty keys
     if ((key == null) || key.isEmpty() || (value == null) || value.isEmpty()) {
-      return;
+      return this;
     }
     
     // If the header hasn't been allocated yet, do so now
@@ -131,6 +141,8 @@ public final class Response
     
     // Store the key/value pair
     header.put(key, value);
+    
+    return this;
   }
   
   /**
@@ -158,38 +170,51 @@ public final class Response
   
   /**
    * Set the content type in the response header to JSON.
+   * 
+   * @return this
    */
-  public void setJsonContentType() {
+  public Response setJsonContentType() {
     setContentTypeByFileExt("json");
+    return this;
   }
   
   /**
    * Set the content type in the response header to plain text.
+   * 
+   * @return this
    */
-  public void setPlainTextContentType() {
+  public Response setPlainTextContentType() {
     setContentTypeByFileExt("txt");
+    return this;
   }
   
   /**
    * Set the content type in the response header to HTML.
+   * 
+   * @return this
    */
-  public void setHTMLContentType() {
+  public Response setHTMLContentType() {
     setContentTypeByFileExt("html");
+    return this;
   }
   
   /**
    * Set the content type based on the file extension (e.g., html, txt, xls).
    * 
    * @param ext the file extension
+   * @return this
    */
-  public void setContentTypeByFileExt(final String ext) {
+  public Response setContentTypeByFileExt(final String ext) {
     addToHeader(HeaderField.RES_CONTENT_TYPE, ContentTypeCache.getCache().getContentTypeMIMEType(ext));
+    return this;
   }
   
   /**
    * Set the default values.
+   * 
+   * @return this
    */
-  public void setDefaults() {
+  public Response setDefaults() {
     setPlainTextContentType();
     addToHeader(HeaderField.RES_SERVER, "Shortstop Web Server 0.1");
     addToHeader(HeaderField.RES_CONTENT_LENGTH, 0);
@@ -207,15 +232,21 @@ public final class Response
     String dateStr = sdf.format(date);
     addToHeader(HeaderField.RES_DATE, dateStr);
     addToHeader(HeaderField.RES_LAST_MODIFIED, dateStr);
+    
+    return this;
   }
   
   
   /**
-   * Set the 404 for this response.
+   * Set the code to 404 for this response.
+   * 
+   * @return this
    */
-  public void setAs404() {
+  public Response setAs404() {
     setCode(404);
     setBody(null);
+    
+    return this;
   }
   
   
@@ -230,11 +261,15 @@ public final class Response
   
   /**
    * Add the MD5 hash to the header.
+   * 
+   * @return this
    */
-  public void addMD5() {
+  public Response addMD5() {
     if (body != null) {
       final String md5 = Utility.getMD5(body);
       header.put(HeaderField.RES_CONTENT_MD5, md5);
     }
+    
+    return this;
   }
 }
