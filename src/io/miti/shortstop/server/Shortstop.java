@@ -4,6 +4,8 @@ import io.miti.shortstop.util.ContentTypeCache;
 import io.miti.shortstop.util.HeaderField;
 import io.miti.shortstop.util.Utility;
 
+import io.miti.shortstop.model.*;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;

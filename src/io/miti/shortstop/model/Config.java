@@ -1,4 +1,4 @@
-package io.miti.shortstop.server;
+package io.miti.shortstop.model;
 
 import io.miti.shortstop.util.Utility;
 

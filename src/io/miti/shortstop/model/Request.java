@@ -1,4 +1,4 @@
-package io.miti.shortstop.server;
+package io.miti.shortstop.model;
 
 import io.miti.shortstop.util.Utility;
 
@@ -7,13 +7,28 @@ import java.util.Map;
 
 public final class Request
 {
+  /** The HTTP operation (PUT, POST, GET, etc.) */
   private HttpOperation operation = null;
+  
+  /** The original endpoint URL passed to the server. */
   private String endpoint = null;
+  
+  /** The protocol (e.g., "HTTP/1.0"). */
   private String protocol = null;
+  
+  /** Query string parameters (e.g., "?k1=v1&k2=v2..."). */
   private Map<String, String> parameters = null;
+  
+  /** Any payload in the request. */
   private char[] buffer = null;
+  
+  /** The parsed URL (from the endpoint, minus parameters and fragment). */
   private String url = null;
+  
+  /** Any fragment from the URL (e.g., "#top"). */
   private String fragment = null;
+  
+  /** Map of key/value pairs from the header. */
   private Map<String, String> header = null; 
   
   /**
