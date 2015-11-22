@@ -10,7 +10,9 @@ public final class MyHandler {
   }
   
   public static Response simpleHandler(final Request req) {
-    // TODO
-    return null;
+    final Response resp = new Response(200);
+    String msg = "{\"sum\": \"unknown\"}";
+    resp.setJsonContentType().setBody(msg.getBytes());
+    return resp;
   }
 }

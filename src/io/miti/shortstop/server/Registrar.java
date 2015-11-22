@@ -14,6 +14,7 @@ import io.miti.shortstop.model.Response;
 import io.miti.shortstop.model.TemplateField;
 import io.miti.shortstop.model.UrlHandler;
 import io.miti.shortstop.model.UrlTemplate;
+import io.miti.shortstop.util.HeaderField;
 
 public final class Registrar {
   
@@ -89,8 +90,17 @@ public final class Registrar {
     
     // If there's no verb match, return 4xx, with a list of the supported operations
     if (handler == null) {
-      final Response resp = new Response();
-      // TODO Return 4xx with a list of supported operations
+      final Response resp = new Response().setCode(405);
+      
+      // Return 4xx with a list of supported operations
+      final StringBuilder sb = new StringBuilder(30);
+      for (UrlHandler uh : list) {
+        if (sb.length() > 0) {
+          sb.append(", ");
+        }
+        sb.append(uh.getVerb().toString());
+      }
+      resp.addToHeader(HeaderField.RES_ALLOW, sb.toString());
       return resp;
     }
     
