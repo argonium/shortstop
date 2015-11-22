@@ -181,51 +181,82 @@ public final class Shortstop {
     
     // Handle requests by looking up handlers for the verb and URL in msg
     Response response = Registrar.process(msg);
-    if ((response == null) && (cfg.canDownloadFiles())) {
+    
+    // See if we got a null response
+    if (response == null) {
       
-      // We support downloading files.  Get the extension and check that.
-      final String url = msg.getURL();
-      final int index = url.lastIndexOf('.');
-      boolean canContinue = false;
-      String ext = null;
-      if (index < 0) {
-        canContinue = false;
-      } else {
-        ext = url.substring(index + 1).toLowerCase(Locale.US);
-        canContinue = cfg.canDownloadExtension(ext);
-      }
-      
-      // Instantiate the response now
-      response = new Response();
-      
-      // Passed the tests so far
-      if (canContinue) {
-        // Verify the file exists (as a file)
-        final File file = new File(cfg.getFileDirectory(), url);
-        if (!file.exists() || !file.isFile()) {
+      // We get a null response, so see if we can download a matching filename
+      if (cfg.canDownloadFiles()) {
+
+        // We support downloading files. Get the extension and check that.
+        final String url = msg.getURL();
+        final int index = url.lastIndexOf('.');
+        boolean canContinue = false;
+        String ext = null;
+        if (index < 0) {
+          // No extension.  Stop processing.
           canContinue = false;
         } else {
-          final Path path = file.toPath();
-          byte[] data = Files.readAllBytes(path);
-          response.setCode(200);
-          response.setBody(data);
-          response.addToHeader(HeaderField.RES_CONTENT_TYPE,
-              ContentTypeCache.getCache().getContentTypeMIMEType(ext));
-          canContinue = true;
+          // See if the extension is in the list of allowed extensions
+          ext = url.substring(index + 1).toLowerCase(Locale.US);
+          canContinue = cfg.canDownloadExtension(ext);
         }
+
+        // Instantiate the response now
+        response = new Response();
+        
+        // Check for .. in the file name, and disallow those, since
+        // we want to ensure the user can only retrieve files from the
+        // file directory
+        if (canContinue) {
+          canContinue = (!url.contains(".."));
+        }
+
+        // Passed the tests so far
+        if (canContinue) {
+          // Verify the file exists (as a file)
+          final File file = new File(cfg.getFileDirectory(), url);
+          if (!fileCanBeDownloaded(file)) {
+            canContinue = false;
+          } else {
+            final Path path = file.toPath();
+            byte[] data = Files.readAllBytes(path);
+            response.setCode(200);
+            response.setBody(data);
+            response.addToHeader(HeaderField.RES_CONTENT_TYPE, ContentTypeCache.getCache().getContentTypeMIMEType(ext));
+            canContinue = true;
+          }
+        }
+
+        // If an error occurred, mark the response as 404
+        if (!canContinue) {
+          response.setAs404();
+        }
+      } else {
+        response = new Response().setAs404();
       }
-      
-      // If an error occurred, mark the response as 404
-      if (!canContinue) {
-        response.setAs404();
-      }
-    } else {
-      response.setAs404();
     }
     
+    // Return the generated response
     return response;
   }
   
+  
+  /**
+   * Return whether the specified file can be downloaded.
+   * 
+   * @param file the requested file
+   * @return whether the user can download it
+   */
+  private boolean fileCanBeDownloaded(final File file) {
+    if (!file.exists() || !file.isFile()) {
+      return false;
+    }
+    
+    return true;
+  }
+
+
   /**
    * Return whether this class is running inside a JAR or not.
    * 
