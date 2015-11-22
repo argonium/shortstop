@@ -1,6 +1,7 @@
 package io.miti.shortstop.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -11,6 +12,9 @@ public final class UrlTemplate {
   
   /** The parsed version. */
   private List<TemplateField> fields = null;
+  
+  /** Whether there are variable fields in the URL. */
+  private boolean hasVariables = false;
   
   /** The number of elements. */
   private int numFields = 0;
@@ -53,10 +57,16 @@ public final class UrlTemplate {
       
       if (!tf.isVariable()) {
         fixedFields.add(new FixedIndex(numFields, tf.getField()));
+      } else {
+        hasVariables = true;
       }
       
       ++numFields;
     }
+  }
+  
+  public boolean hasVariables() {
+    return hasVariables;
   }
   
   /**
@@ -66,6 +76,14 @@ public final class UrlTemplate {
    */
   public String getTemplate() {
     return template;
+  }
+  
+  public Iterator<TemplateField> getFields() {
+    if (fields == null) {
+      return null;
+    }
+    
+    return fields.iterator();
   }
 
   @Override
@@ -94,5 +112,36 @@ public final class UrlTemplate {
     if (numFields != other.numFields)
       return false;
     return true;
+  }
+
+  public boolean matchesImpl(final UrlTemplate urlImpl) {
+    if (numFields != urlImpl.numFields) {
+      return false;
+    }
+    
+    for (int i = 0; i < numFields; ++i) {
+      final TemplateField tf = fields.get(i);
+      
+      // If this is a variable, don't compare
+      if (tf.isVariable()) {
+        continue;
+      }
+      
+      if (!tf.getField().equals(urlImpl.fields.get(i))) {
+        return false;
+      }
+    }
+    
+    // If we reach here, we have a match
+    return true;
+  }
+
+  public String getFieldByPosition(int i) {
+    if ((fields == null) || (i < 0) || (i >= fields.size())) {
+      System.err.println("Warning: getFieldByPosition() has an error");
+      return null;
+    }
+    
+    return fields.get(i).getField();
   }
 }

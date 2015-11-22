@@ -31,6 +31,9 @@ public final class Request
   /** Map of key/value pairs from the header. */
   private Map<String, String> header = null; 
   
+  /** Map of values supplied from the URL template. */
+  private Map<String, String> templateVariables = null;
+  
   /**
    * Default constructor.
    */
@@ -335,5 +338,23 @@ public final class Request
    */
   public boolean headerContainsKey(final String key) {
     return ((header != null) && (key != null) && (header.containsKey(key)));
+  }
+  
+  
+  public void addTemplateVariable(final String key, final String value) {
+    if (templateVariables == null) {
+      templateVariables = new HashMap<String, String>(3);
+    }
+    
+    templateVariables.put(key, value);
+  }
+  
+  
+  public String getTemplateVariable(final String key) {
+    if (templateVariables == null) {
+      return null;
+    }
+    
+    return templateVariables.get(key);
   }
 }
