@@ -180,12 +180,8 @@ public final class Shortstop {
     }
     
     // Handle requests by looking up handlers for the verb and URL in msg
-    Response response = new Response();
-    if (msg.getURL().equals("/") && msg.getOperation().equals(HttpOperation.GET)) {
-      // TODO Handle the root environment
-    } else if (msg.getURL().equals("/topics") && msg.getOperation().equals(HttpOperation.GET)) {
-      // TODO Handle a specific endpoint
-    } else if (cfg.canDownloadFiles()){
+    Response response = Registrar.process(msg);
+    if ((response == null) && (cfg.canDownloadFiles())) {
       
       // We support downloading files.  Get the extension and check that.
       final String url = msg.getURL();
@@ -198,6 +194,9 @@ public final class Shortstop {
         ext = url.substring(index + 1).toLowerCase(Locale.US);
         canContinue = cfg.canDownloadExtension(ext);
       }
+      
+      // Instantiate the response now
+      response = new Response();
       
       // Passed the tests so far
       if (canContinue) {
@@ -356,6 +355,9 @@ public final class Shortstop {
   public static void main(final String[] args) {
     // Get the properties
     Config cfg = new Config();
+    
+    // Register some handlers
+    Registrar.registerHandlers();
     
     // Start the server
     new Shortstop(cfg).startServer();

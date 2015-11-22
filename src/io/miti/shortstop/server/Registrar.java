@@ -73,16 +73,20 @@ public final class Registrar {
     
     // Check if we have any endpoints registered
     if (map.isEmpty()) {
-      Response resp = new Response().setAs404();
-      return resp;
+      return null;
     }
     
     // See if the map contains any URLs matching the request's URL (template or not)
     final UrlTemplate urlImpl = new UrlTemplate(request.getURL());
     final UrlTemplate urlTemplate = findMatchingUrlTemplate(urlImpl);
+    if (urlTemplate == null) {
+      return null;
+    }
+    
+    // Find the map entry by the URL template
     final List<UrlHandler> list = map.get(urlTemplate);
     if (list == null) {
-      return new Response().setAs404();
+      return null;
     }
     
     // If we find a match, see if there's an entry for the HTTP operation
@@ -100,6 +104,8 @@ public final class Registrar {
         }
         sb.append(uh.getVerb().toString());
       }
+      
+      // Add the field to the header and return the response
       resp.addToHeader(HeaderField.RES_ALLOW, sb.toString());
       return resp;
     }

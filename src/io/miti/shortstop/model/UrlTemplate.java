@@ -127,7 +127,7 @@ public final class UrlTemplate {
         continue;
       }
       
-      if (!tf.getField().equals(urlImpl.fields.get(i))) {
+      if (!tf.getField().equals(urlImpl.fields.get(i).getField())) {
         return false;
       }
     }
