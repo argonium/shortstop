@@ -12,7 +12,7 @@ public final class MyHandler {
   public static Response simpleHandler(final Request req) {
     final Response resp = new Response(200);
     String msg = "{\"sum\": \"unknown\"}";
-    resp.setJsonContentType().setBody(msg.getBytes());
+    resp.setJsonContentType().setBody(msg);
     return resp;
   }
 }

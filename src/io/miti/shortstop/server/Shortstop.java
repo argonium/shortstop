@@ -222,7 +222,7 @@ public final class Shortstop {
             final Path path = file.toPath();
             byte[] data = Files.readAllBytes(path);
             response.setCode(200);
-            response.setBody(data);
+            response.setBodyAsBytes(data);
             response.addToHeader(HeaderField.RES_CONTENT_TYPE, ContentTypeCache.getCache().getContentTypeMIMEType(ext));
             canContinue = true;
           }

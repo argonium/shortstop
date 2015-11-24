@@ -1,5 +1,6 @@
 package io.miti.shortstop.model;
 
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -94,12 +95,28 @@ public final class Response
   }
   
   /**
+   * Set the response body as a string.
+   * 
+   * @param sBody the body string
+   * @return this
+   */
+  public Response setBody(final String sBody) {
+    // Check for null
+    if (sBody == null) {
+      return setBodyAsBytes(null);
+    }
+    
+    // Cast the string to a byte array
+    return setBodyAsBytes(sBody.getBytes(StandardCharsets.UTF_8));
+  }
+  
+  /**
    * Set the response body.
    * 
    * @param sBody the new body
    * @return this
    */
-  public Response setBody(final byte[] sBody) {
+  public Response setBodyAsBytes(final byte[] sBody) {
     
     // Save the new body
     body = (sBody == null) ? null : sBody;
