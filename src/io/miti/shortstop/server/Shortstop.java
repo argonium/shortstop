@@ -172,7 +172,8 @@ public final class Shortstop {
     final String reqMD5 = msg.headerGetKey(HeaderField.REQ_CONTENT_MD5);
     if ((reqMD5 != null) && (msg.hasBody())) {
       // Compute the MD5 hash for the content and see if they match
-      final String md5 = Utility.getMD5(new String(msg.getMessageBody()).getBytes());
+      StringBuilder sb = new StringBuilder().append(msg.getMessageBody());
+      final String md5 = Utility.getMD5(sb.toString().getBytes(StandardCharsets.UTF_8));
       if (!md5.equals(reqMD5)) {
         Response resp = new Response(400);
         return resp;
