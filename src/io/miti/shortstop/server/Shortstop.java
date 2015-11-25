@@ -12,8 +12,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,6 +52,42 @@ public final class Shortstop {
   
   
   /**
+   * Generate a readable version of the URL.
+   * 
+   * @param isSecure whether the server is using HTTPS
+   * @param port the port number
+   * @return the URL as a string
+   */
+  private static String getServerURL(final boolean isSecure, final int port) {
+    
+    // Build the URL
+    StringBuilder sb = new StringBuilder(100);
+    sb.append(isSecure ? "https" : "http").append("://");
+    
+    // Add the IP address
+    try {
+      final String ipAddr = InetAddress.getLocalHost().getHostAddress();
+      sb.append(ipAddr);
+    } catch (UnknownHostException e) {
+      sb.append("localhost");
+    }
+    
+    // Add the port if it's not the standard one for the protocol (http / https)
+    if (isSecure) {
+      if (port != 443) {
+        sb.append(":").append(Integer.toString(port));
+      }
+    } else if (port != 80) {
+      sb.append(":").append(Integer.toString(port));
+    }
+    
+    // Close out the URL
+    sb.append("/");
+    return sb.toString();
+  }
+  
+  
+  /**
    * Start a server.
    */
   private void startServer() {
@@ -58,7 +96,8 @@ public final class Shortstop {
     ServerSocket s = null;
     try {
       s = new ServerSocket(cfg.getPort());
-      System.out.println("Started server on port " + cfg.getPort());
+      final String url = getServerURL(false, cfg.getPort());
+      System.out.println("Server running: " + url);
     } catch (IOException ioe) {
       System.err.println("Error running server: " + ioe.getMessage());
       s = null;
