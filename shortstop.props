@@ -20,3 +20,6 @@ file.directory=./files
 # If true, compute the MD5 hash for responses and include
 # the value in the header sent to the client
 md5.response=true
+
+# If true, the server will automatically handle TRACE requests
+trace.enabled=true

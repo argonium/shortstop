@@ -1,2 +1,4 @@
 # shortstop
-Shortstop - Minimal HTTP server
+Shortstop - Minimal REST and HTTP server
+
+Documentation is forthcoming.

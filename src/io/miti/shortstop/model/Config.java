@@ -24,6 +24,7 @@ public final class Config
   private Set<String> allowedExtensions = null;
   private String fileDirectory = null;
   private boolean computeMD5Response = false;
+  private boolean supportTrace = false;
   
   public Config() {
     readProperties();
@@ -112,6 +113,10 @@ public final class Config
     // Check if we should compute the MD5 for responses
     computeMD5Response = Utility.parseStringAsBoolean(
         props.getProperty("md5.response"), false);
+    
+    // Check if we support TRACE operations automatically
+    supportTrace = Utility.parseStringAsBoolean(
+        props.getProperty("trace.enabled"), false);
   }
   
   
@@ -163,5 +168,15 @@ public final class Config
    */
   public boolean shouldComputeMD5Response() {
     return computeMD5Response;
+  }
+  
+  
+  /**
+   * Whether we automatically support TRACE requests.
+   * 
+   * @return whether TRACE requests  are supported
+   */
+  public boolean traceEnabled() {
+    return supportTrace;
   }
 }
