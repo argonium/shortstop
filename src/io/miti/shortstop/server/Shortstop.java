@@ -220,7 +220,7 @@ public final class Shortstop {
     }
     
     // Handle requests by looking up handlers for the verb and URL in msg
-    Response response = Registrar.process(msg);
+    Response response = Registrar.process(msg, cfg);
     
     // See if we got a null response
     if (response == null) {

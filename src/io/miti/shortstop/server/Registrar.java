@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.miti.shortstop.handler.MyHandler;
+import io.miti.shortstop.model.Config;
 import io.miti.shortstop.model.HttpOperation;
 import io.miti.shortstop.model.Request;
 import io.miti.shortstop.model.RequestInterface;
@@ -69,7 +70,17 @@ public final class Registrar {
     }
   }
   
-  public static Response process(final Request request) {
+  public static Response process(final Request request, final Config cfg) {
+    
+    // Check if we support TRACE, if this is a trace call
+    if (request.getOperation().equals(HttpOperation.TRACE)) {
+      if (cfg.traceEnabled()) {
+        return handleTraceRequest(request);
+      } else {
+        // Trace is not supported (not enabled in the properties file)
+        return new Response().setCode(405);
+      }
+    }
     
     // Check if we have any endpoints registered
     if (map.isEmpty()) {
@@ -119,6 +130,12 @@ public final class Registrar {
   }
   
   
+  private static Response handleTraceRequest(final Request request) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+
   private static UrlTemplate findMatchingUrlTemplate(UrlTemplate urlImpl) {
     // Verify we have entries in the map
     if ((map == null) || map.isEmpty()) {
