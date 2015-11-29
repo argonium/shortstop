@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.miti.shortstop.handler.MyHandler;
 import io.miti.shortstop.model.Config;
@@ -131,8 +132,36 @@ public final class Registrar {
   
   
   private static Response handleTraceRequest(final Request request) {
-    // TODO Auto-generated method stub
-    return null;
+    // Declare our response object
+    Response resp = new Response(200);
+    resp.addToHeader(HeaderField.RES_CONTENT_TYPE, "message/http");
+    
+    // Build a body of the request headers
+    final Set<String> headerKeys = request.getHeaderKeys();
+    if (headerKeys != null) {
+      // Declare our string holding the request's keys
+      StringBuilder sb = new StringBuilder(50);
+      
+      // Iterate over the header keys
+      for (String key : headerKeys) {
+        // Get the value for this key
+        final String value = request.headerGetKey(key);
+        
+        // If the current key is Via, add it to the response header
+        if (key.equals("Via")) {
+          resp.addToHeader(key, value);
+        }
+        
+        // Add the request header key/value to the response body
+        sb.append(key).append(": ").append(value).append("\n");
+      }
+      
+      // Save the body to the response
+      resp.setBody(sb.toString());
+    }
+    
+    // Return the generated response
+    return resp;
   }
 
 

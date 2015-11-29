@@ -4,6 +4,7 @@ import io.miti.shortstop.util.Utility;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public final class Request
 {
@@ -328,6 +329,14 @@ public final class Request
     }
     
     return header.get(key);
+  }
+  
+  public Set<String> getHeaderKeys() {
+    if (header == null) {
+      return null;
+    }
+    
+    return header.keySet();
   }
   
   /**
