@@ -235,6 +235,7 @@ public final class Response
     setPlainTextContentType();
     addToHeader(HeaderField.RES_SERVER, "Shortstop Web Server 0.1");
     addToHeader(HeaderField.RES_CONTENT_LENGTH, 0);
+    addToHeader(HeaderField.RES_CONNECTION, "close");
     addToHeader(HeaderField.RES_CACHE_CONTROL, "no-cache, no-store, max-age=0, must-revalidate");
     addToHeader(HeaderField.RES_PRAGMA, "no-cache");
     addToHeader(HeaderField.RES_EXPIRES, 0);
