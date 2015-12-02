@@ -134,7 +134,12 @@ public final class Response
    * @return the body
    */
   public byte[] getBody() {
-    return body;
+    // Check for null
+    if (body == null) {
+      return null;
+    }
+    
+    return java.util.Arrays.copyOf(body, body.length);
   }
   
   /**

@@ -210,7 +210,13 @@ public final class Request
    * @return the message body
    */
   public char[] getMessageBody() {
-    return buffer;
+    // Check for null
+    if (buffer == null) {
+      return null;
+    }
+    
+    // Return a copy of the buffer
+    return java.util.Arrays.copyOf(buffer, buffer.length);
   }
   
   /**
@@ -219,9 +225,18 @@ public final class Request
    * @param caBuffer the message body
    */
   public void setMessageBody(final char[] caBuffer) {
-    buffer = caBuffer;
+    if (caBuffer == null) {
+      buffer = null;
+    } else {
+      buffer = java.util.Arrays.copyOf(caBuffer, caBuffer.length);
+    }
   }
   
+  /**
+   * Return whether this object has a body.
+   * 
+   * @return if there is a body
+   */
   public boolean hasBody() {
     return (buffer != null);
   }
