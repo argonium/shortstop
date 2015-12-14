@@ -37,6 +37,7 @@ public final class Registrar {
   public static void registerHandlers() {
     // Add handlers here
     register(HttpOperation.GET, "/api/sum", MyHandler::simpleHandler);
+    register(HttpOperation.GET, "/api/:val1/:val2", MyHandler::addStrings);
   }
   
   

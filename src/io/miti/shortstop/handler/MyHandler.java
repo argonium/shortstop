@@ -15,4 +15,12 @@ public final class MyHandler {
     resp.setJsonContentType().setBody(msg);
     return resp;
   }
+  
+  public static Response addStrings(final Request req) {
+    final Response resp = new Response(200);
+    String sum = req.getParameterByKey("val1") + req.getParameterByKey("val2");
+    String msg = "{\"sum\": \"" + sum + "\"}";
+    resp.setJsonContentType().setBody(msg);
+    return resp;
+  }
 }
